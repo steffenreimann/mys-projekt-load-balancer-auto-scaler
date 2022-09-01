@@ -8,7 +8,7 @@ socket.on('connect', function (msg) {
 });
 
 socket.on('reqPerSec', function (msg) {
-    //console.log('reqPerSec', msg);
+    console.log('reqPerSec', msg);
     var date = new Date()
     for (const key in msg) {
         if (Object.hasOwnProperty.call(msg, key)) {

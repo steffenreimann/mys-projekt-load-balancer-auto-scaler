@@ -7,8 +7,8 @@ var gesammtReq = 0;
 var startDate = new Date();
 var exited = 0;
 
-var reqPerThread = 10000
-var threads = 4
+var reqPerThread = 1000
+var threads = 24
 
 if (cluster.isMaster) {
   // Fork workers.
@@ -29,7 +29,10 @@ if (cluster.isMaster) {
     if (exited == threads - 1) {
       var endDate = new Date();
       var timeneeded = endDate - startDate;
-      console.log(reqPerThread * threads, ' anfragen wurden erfolgreich beantwortet.', timeneeded / 1000);
+      var gesamtReq = reqPerThread * threads
+      var reqpersek = gesamtReq / (timeneeded / 1000)
+      console.log(gesamtReq, ' anfragen wurden erfolgreich beantwortet.', timeneeded / 1000);
+      console.log(reqpersek, ' per sek.');
     }
     exited++
   });
@@ -57,7 +60,7 @@ if (cluster.isMaster) {
         console.log('Fehler!');
       }
       gesammtReq++;
-      //console.log('worker id : ', cluster.worker.id, ' / Req : ', i);
+      console.log('worker id : ', cluster.worker.id, ' / Req : ', i);
       i++
     }
     return
@@ -84,11 +87,3 @@ if (cluster.isMaster) {
   init(reqPerThread)
 
 }
-
-
-
-
-
-
-
-

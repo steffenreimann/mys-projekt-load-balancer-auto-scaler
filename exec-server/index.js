@@ -70,7 +70,7 @@ io.on('connection', client => {
         } else {
             status = { webServer: { killed: true, exitCode: -1, signalCode: -1 }, execServer: { connected: true } }
         }
-        console.log(status);
+        //console.log(status);
         io.emit('statusChanged', status)
 
         cb(status)
@@ -139,7 +139,7 @@ function startServer(client) {
 
         serverProcess.stdout.on('data', (data) => {
             var sdata = arrayBufferToString(data).trim()
-            //console.log(`stdout: ${data}`);
+            console.log(`stdout: ${data}`);
             //console.log('raw ', data);
             //console.log('string ', sdata);
             //console.log('typeof sdata ', typeof sdata);
@@ -225,7 +225,7 @@ function statusChanged() {
     } else {
         status = { webServer: { killed: true, exitCode: -1, signalCode: -1 }, execServer: { connected: true } }
     }
-    console.log(status);
+    //console.log(status);
     io.emit('statusChanged', status)
 }
 

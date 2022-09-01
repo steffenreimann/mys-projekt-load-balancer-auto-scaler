@@ -12,6 +12,8 @@
     "easy-nodejs-app-settings": "file:../../easy-nodejs-app-settings",
     "express": "^4.18.1",
     "ipaddr.js": "^2.0.1",
+    "memfs": "^3.4.7",
+    "memored": "^1.1.1",
     "node-ssh": "^13.0.0",
     "request": "^2.88.2",
     "socket.io": "^4.5.1",

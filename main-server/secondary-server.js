@@ -3,40 +3,65 @@ const { v4: uuidv4 } = require('uuid');
 const ioc = require("socket.io-client");
 var EventEmitter = require('events').EventEmitter;
 util = require('util');
+var sek = 0;
 
 class SecondaryServerManager {
-    constructor() {
+    constructor(isMaster) {
         this.secServers = {}
         this.connections = 0;
         this.runningServers = null;
         this.notRunningServers = null;
         this.bestServer = null;
-        this.timer = setInterval(() => {
-            var reqPerSec = this.calcAllReqPerSec();
-            reqPerSec['main'] = this.connections
-            this.connections = 0;
+        this.isMaster = isMaster;
+        if (this.isMaster) {
+            this.timer = setInterval(() => {
+                sek++;
+                var reqPerSec = this.calcAllReqPerSec();
+                reqPerSec['main'] = this.connections
+                this.connections = 0;
 
-            this.runningServers = this.getRunningServers()
-            this.notRunningServers = this.getNotRunningServer()
-            //console.log(reqPerSec);
-            //this.#event = new EventEmitter("reqPerSec", { detail: reqPerSec });
-            //this.dispatchEvent(this.#event);
+                this.runningServers = this.getRunningServers()
+                this.notRunningServers = this.getNotRunningServer()
 
-            /* if (this.runningServers < 2 && this.notRunningServers > 0) {
-                await this.startNextServer()
-            } */
+                if (reqPerSec['main'] / this.runningServers.length > 5 && this.notRunningServers.length > 0 || this.runningServers.length < 4 && this.notRunningServers.length > 0) {
+                    console.log('Start next Server');
+                    this.startNextServer()
+                } else {
+                    //console.log('overall nicht über 50');
+                }
 
-            if (reqPerSec['main'] / this.runningServers.length > 5 && this.notRunningServers.length > 0 || this.runningServers.length < 2 && this.notRunningServers.length > 0) {
-                console.log('Start next Server');
-                this.startNextServer()
-            } else {
-                //console.log('overall nicht über 50');
-            }
+                //this.bestServer = this.getServerWithLowestReqPerSec()
+                //console.log('best server : ', this.bestServer.exec_port);
+                const clone = JSON.parse(JSON.stringify(reqPerSec));
+                //console.log(reqPerSec);
+                // console.log(sek, 'reqPerSec', reqPerSec);
+                this.emit('reqPerSec', clone);
+            }, 1000)
+        }
 
-            //this.bestServer = this.getServerWithLowestReqPerSec()
-            //console.log('best server : ', this.bestServer.exec_port);
-            this.emit('reqPerSec', reqPerSec);
-        }, 1000)
+    }
+
+    getReqPerSek(cb) {
+        //console.log('getReqPerSek');
+        var reqPerSec = this.calcAllReqPerSec();
+        reqPerSec['main'] = this.connections
+        this.connections = 0;
+        this.runningServers = this.getRunningServers()
+        this.notRunningServers = this.getNotRunningServer()
+        //getReqPerSec
+        /*         
+        
+                if (reqPerSec['main'] / this.runningServers.length > 5 && this.notRunningServers.length > 0 || this.runningServers.length < 4 && this.notRunningServers.length > 0) {
+                    console.log('Start next Server');
+                    this.startNextServer()
+                } else {
+                    //console.log('overall nicht über 50');
+                } */
+
+        //const clone = JSON.parse(JSON.stringify(reqPerSec));
+        cb(reqPerSec)
+        //return reqPerSec
+        //this.emit('reqPerSec', reqPerSec);
     }
     addServer(id, secServer) {
         //var id = uuidv4();
@@ -62,7 +87,17 @@ class SecondaryServerManager {
         // console.log('Get best server running servers = ', this.getNotRunningServer().length);
 
         //return this.bestServer
-        return this.getServerWithLowestReqPerSec()
+
+
+        this.connections++;
+        var best = this.getServerWithLowestReqPerSec()
+        if (!best) {
+            console.log('Bad best return ');
+            return false
+        }
+        best.connections++;
+        return best
+
         // return Object.values(this.secServers)[0]
     }
     async getServerStatus() {
@@ -137,7 +172,7 @@ class SecondaryServerManager {
                 ret = index
             }
         }
-        //console.log(servers[ret]);
+        //console.log(this.runningServers);
         return this.runningServers[ret]
     }
     calcAllReqPerSec() {
@@ -172,7 +207,7 @@ class SecondaryServer {
                 //console.log('SIOC Try Connect to: ', "http://" + that.host + ":" + that.exec_port);
                 that.socket = ioc("http://" + that.host + ":" + that.exec_port);
                 that.socket.on("connect", () => {
-                    //console.log("connect", that.socket.id); // x8WIv7-mJelg7on_ALbx
+                    //console.log("connected with execute server ", that.exec_port); // x8WIv7-mJelg7on_ALbx
 
                     that.socket.emit('getWebServerStatus', (status) => {
                         //console.log('status : ', status);
@@ -188,12 +223,13 @@ class SecondaryServer {
                     that.status = status;
                     that.status.webServer.running = !status.webServer.killed && status.webServer.exitCode == null && status.webServer.signalCode == null;
                     //console.log("statusChanged : ", that.status); // x8WIv7-mJelg7on_ALbx
+
                     that.emit('statusChanged', that);
                     //changeServer
                 });
 
                 that.socket.on("disconnect", (status) => {
-                    console.log("disconnect");
+                    console.log("Exec Server disconnected");
                     //var status = { webServer: { running: false }, execServer: { connected: false } }
                     //that.status = status;
                     that.status.webServer.running = false;
@@ -266,6 +302,26 @@ class SecondaryServer {
         })
 
     }
+}
+
+var fsm = require('memfs');
+function getIPV(variable) {
+    var ret = fsm.readFileSync(variable, 'utf8');
+    try {
+        ret = JSON.parse(ret)
+    } catch (error) {
+
+    }
+    return ret
+}
+
+function setIPV(variable, data) {
+    //console.log(typeof data);
+    if (typeof data == 'object') {
+        data = JSON.stringify(data)
+    }
+    //console.log(typeof data);
+    return fsm.writeFileSync(variable, data);
 }
 
 util.inherits(SecondaryServerManager, EventEmitter);
