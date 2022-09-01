@@ -2,24 +2,123 @@
 
 <head>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
-
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@3.9.1/dist/chart.min.js"></script>
 
 </head>
 
 <body>
+    <div class="container row">
+        <div class="col">
+            <input id="addSecServerConfigHost" class="form-control" placeholder="Exec Server Host" value="192.168.178.23">
+        </div>
+        <div class="col">
+            <input id="addSecServerConfigPort" class="form-control" placeholder="Exec Server Port" value="8081">
+        </div>
+        <div class="col">
+            <input id="addSecServerWebPort" class="form-control" placeholder="Webserver Port" value="9090">
+        </div>
+        <div class="col">
+            <button id="startButton" class="btn btn-outline-primary" type="button" onclick="addSecServer()">Start</button>
+        </div>
+    </div>
+
+    <div class="col-md-6 p-3">
+        <div class="text-white bg-dark rounded-3 container card">
+            <!-- var ret = { webServer: { killed: serverProcess.killed, exitCode: serverProcess.exitCode, signalCode: serverProcess.signalCode }, execServer: 'running' } -->
+            <div class="chart-container" style="position: relative; height:60vh;">
+                <canvas id="myChart"></canvas>
+            </div>
+
+            <script>
+                const ctx = document.getElementById('myChart').getContext('2d');
+                const myChart = new Chart(ctx, {
+                    type: 'line',
+                    data: {
+                        datasets: [{
+                            label: 'Main',
+                            borderColor: 'grey',
+                            data: [{ x: 0, y: 0 }],
+                            color: '#ff6384'
+                        }]
+                    },
+                    options: {
+                        maintainAspectRatio: false,
+                        responsive: true,
+                        scales: {
+                            x: {
+                                ticks: {
+                                    source: 'date'
+                                }
+
+                            },
+                            y: {
+                                type: 'linear',
+                                min: 0,
+
+                            }
+                        }
+                    }
+                });
+            </script>
 
 
-    <div id="renderedSecServer"></div>
+        </div>
+    </div>
+    <div id="renderedSecServer" class="row">
+
+
+    </div>
 
 
 
     <template id="secserver">
-        <div class="col-md-6">
-            <div class="h-100 p-5 text-white bg-dark rounded-3">
-                <h2 id="serverip">Change the background</h2>
-                <p></p>
-                <button id="startButton" class="btn btn-outline-light" type="button">Start</button>
-                <button id="stopButton" class="btn btn-outline-light" type="button">Stop</button>
+        <div class="col-md-6 p-3">
+            <div class="text-white bg-dark rounded-3 container card">
+                <!-- var ret = { webServer: { killed: serverProcess.killed, exitCode: serverProcess.exitCode, signalCode: serverProcess.signalCode }, execServer: 'running' } -->
+
+
+                <div class="input-group mb-3">
+                    <span class="input-group-text btn btn-outline-light" id="basic-addon1"> Execute Server ID </span>
+                    <span class="input-group-text btn btn-outline-light form-control" id="serverid"></span>
+                </div>
+
+                <div class="input-group mb-3">
+                    <span class="input-group-text btn btn-outline-light" id="basic-addon1"> Webserver Running ? </span>
+                    <span class="input-group-text btn btn-outline-light form-control" id="webserverrunning"></span>
+                </div>
+
+                <div class="input-group mb-3">
+                    <span class="input-group-text btn btn-outline-light" id="basic-addon1"> Requests per Secound </span>
+                    <span class="input-group-text btn btn-outline-light form-control" id="reqpersec"></span>
+                </div>
+
+                <div class="input-group mb-3">
+                    <span class="input-group-text btn btn-outline-light" id="basic-addon1"> Execute Server Connected? </span>
+                    <span class="input-group-text btn btn-outline-light form-control" id="statusexecServer"></span>
+                </div>
+
+                <div class="input-group mb-3">
+                    <span class="input-group-text btn btn-outline-light" id="basic-addon1"> Execserver IP </span>
+                    <input id="editSecServerConfigHost" class="form-control btn btn-outline-light" placeholder="Exec Server Host" value="192.168.178.23">
+                </div>
+                <div class="input-group mb-3">
+                    <span class="input-group-text btn btn-outline-light" id="basic-addon1">Execserver Port</span>
+                    <input id="editSecServerConfigPort" class="form-control btn btn-outline-light" placeholder="Exec Server Port" value="">
+                </div>
+                <div class="input-group mb-3">
+                    <span class="input-group-text btn btn-outline-light" id="basic-addon1">Webserver Port</span>
+                    <input id="editSecServerWebPort" class="form-control btn btn-outline-light" placeholder="Webserver Port" value="">
+                </div>
+
+
+                <div class="input-group mb-3">
+                    <button id="saveButton" class="btn btn-outline-light" type="button">Speichern</button>
+                    <button id="startButton" class="btn btn-outline-light" type="button">Start</button>
+                    <button id="stopButton" class="btn btn-outline-light" type="button">Stop</button>
+                </div>
+
+
+
             </div>
         </div>
     </template>
@@ -31,4 +130,5 @@
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous"></script>
 <script src="socket.io/socket.io.js"></script>
+
 <script src="/js/main.js"></script>
