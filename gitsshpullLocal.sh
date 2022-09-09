@@ -1,1 +1,3 @@
-ssh sr-projekt-load-balancer@10.147.7.164 "git reset --hard HEAD && git pull"
+git reset --hard HEAD 
+git pull 
+pm2 start ~/mys-projekt-load-balancer-auto-scaler/ecosystem.config.js --only "execs"
