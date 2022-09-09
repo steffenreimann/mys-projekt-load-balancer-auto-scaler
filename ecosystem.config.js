@@ -4,7 +4,7 @@ module.exports = {
       name: "execs",
       script: "./exec-server/index.js",
       args: '-exep 7070 -webp 6060',
-      watch: ["./exec-server"],
+      watch: true,
       // Delay between restart
       watch_delay: 1000,
       ignore_watch: ["node_modules"],
