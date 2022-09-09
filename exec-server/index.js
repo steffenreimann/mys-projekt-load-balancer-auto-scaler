@@ -124,7 +124,7 @@ function startServer(client) {
                 console.log('Web Server läuft nicht und wird gestartet!');
 
             } else {
-                console.log('Web Server Allready running! ');
+                console.log('Web Server Allready running!');
                 resolve(true);
                 return;
             }
