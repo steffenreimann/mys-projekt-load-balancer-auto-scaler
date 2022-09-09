@@ -3,7 +3,7 @@ module.exports = {
     {
       name: "execs",
       script: "./exec-server/index.js",
-      args: '-exep 1234 -webp 6060',
+      args: '-exep 7070 -webp 6060',
     },
     {
       name: "mains",
