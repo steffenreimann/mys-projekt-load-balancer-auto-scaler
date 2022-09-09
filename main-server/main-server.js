@@ -9,7 +9,8 @@ var { SecondaryServer, SecondaryServerManager, uuidv4, ioc } = require('./second
 const fm = require('easy-nodejs-app-settings');
 var config = null;
 var secondaryServerManager = new SecondaryServerManager(cluster.isMaster);
-var threads = 24
+var threads = numCPUs
+//var threads = 24
 var test = []
 cluster.schedulingPolicy = cluster.SCHED_RR
 function startService(params) {
@@ -52,6 +53,9 @@ function startService(params) {
             });
 
             socket.on('addSecServer', async (data, cb) => {
+                await addSecServer(data)
+                emitToWorkers('addSecServer', data)
+                return
                 console.log('addSecServer', data);
                 await addSecondaryServerToConfig(data)
 
@@ -67,6 +71,10 @@ function startService(params) {
                 return config.data.secondaryServer
             });
             socket.on('saveSecServer', async (data, cb) => {
+                console.log('saveSecServer data : ', data);
+                saveSecServer(data, cb)
+                emitToWorkers('saveSecServer', data)
+                return
                 //console.log('data : ', data);
                 //console.log('before Save Sec Server Host', config.data.secondaryServer[data.id].host);
                 //console.log('before Save Sec Server Host', config.data.secondaryServer[data.id].exec_port);
@@ -208,7 +216,7 @@ function startService(params) {
             return new Promise((resolve, reject) => {
                 var test = []
                 data = data || {}
-                main_server_io.to("workers").emit(event)
+                main_server_io.to("workers").emit(event, data)
             })
         }
 
@@ -237,6 +245,13 @@ function startService(params) {
                 //cb(data)
                 socket.emit("getReqPerSec", data)
             })
+        });
+        socket.on("addSecServer", (data) => {
+            addSecServer(data)
+        });
+        socket.on("saveSecServer", (data) => {
+            saveSecServer(data)
+
         });
 
 
@@ -450,6 +465,16 @@ function index(obj, is, value) {
     else return index(obj[is[0]], is.slice(1), value);
 }
 
+async function addSecondaryServerToConfig(data) {
+    var uuid = uuidv4();
+    var uuid = uuid.replace(/\-/g, "");
+    await config.push({
+        secondaryServer: {
+            [uuid]: data
+        }
+    });
+    return
+}
 
 async function initServers() {
     var keyArray = Object.keys(config.data.secondaryServer);
@@ -481,7 +506,7 @@ async function init() {
     })
 
     await config.init()
-    //console.log('Config File Init')
+    console.log('Config File Init', config.path)
 
     /*     await addSecondaryServerToConfig({
             host: "192.168.178.23",
@@ -492,6 +517,39 @@ async function init() {
     initServers();
     startService();
 }
+
+async function addSecServer(data) {
+    console.log('addSecServer', data);
+    await addSecondaryServerToConfig(data)
+
+    const secs = new SecondaryServer(data)
+    console.log('AddSecServer = ', secs);
+    var uuid = uuidv4();
+    var uuid = uuid.replace(/\-/g, "");
+    secondaryServerManager.addServer(uuid, secs);
+    var connected = await secs.connect();
+    console.log("connected = ", connected);
+    secs.start()
+
+    return config.data.secondaryServer
+
+}
+
+async function saveSecServer(data, cb) {
+    if (cluster.isMaster) {
+        await config.setKey({ [`secondaryServer.${data.id}.host`]: data.host });
+        await config.setKey({ [`secondaryServer.${data.id}.exec_port`]: data.exec_port });
+        await config.setKey({ [`secondaryServer.${data.id}.webserver_port`]: data.webserver_port });
+    } else {
+        secondaryServerManager.getServerById(data.id).changehost(data.host, data.exec_port, data.webserver_port)
+        if (typeof cb == 'function') {
+            cb(config.data.secondaryServer)
+        }
+
+    }
+
+}
+
 init()
 
 

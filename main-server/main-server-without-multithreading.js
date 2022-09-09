@@ -313,17 +313,7 @@ async function initServers() {
     }
 }
 
-async function addSecondaryServerToConfig(data) {
-    var uuid = uuidv4();
-    var uuid = uuid.replace(/\-/g, "");
-    await config.push({
-        secondaryServer: {
-            [uuid]: data
-        }
-    });
 
-    return
-}
 
 async function init() {
     config = new fm.File({

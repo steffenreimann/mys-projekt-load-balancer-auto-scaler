@@ -4,7 +4,8 @@ const cluster = require('cluster');
 const http = require('http');
 const { exit } = require('process');
 const numCPUs = require('os').cpus().length; //number of CPUS
-var threads = 6
+//var threads = 6
+var threads = numCPUs
 
 
 cluster.schedulingPolicy = cluster.SCHED_RR
