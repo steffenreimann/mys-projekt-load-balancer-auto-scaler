@@ -131,8 +131,8 @@ function startServer(client) {
 
         }
         //console.log('Start Web Server');
-        var pathToEXEC = path.resolve('../web-server/index.js');
-        //console.log('Start Web Server', pathToEXEC);
+        var pathToEXEC = path.resolve(__dirname + '../web-server/index.js');
+        console.log('Start Web Server', pathToEXEC);
 
         //var child = spawn('node', ['src/server/single.js','app='+name,'build=complete', 'incrementVersion=true', 'uploadBuild=true']);
         serverProcess = spawn('node', [pathToEXEC, 'webp', args.webp]);
