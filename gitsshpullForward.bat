@@ -4,6 +4,8 @@ rem ssh -t -p 3154 sr-projekt-execs-1@h2899502.stratoserver.net "cd ~/mys-projek
 
 ssh -t -p 3182 sr-projekt-execs-2@h2899502.stratoserver.net "cd ~/mys-projekt-load-balancer-auto-scaler ; git reset --hard HEAD && git pull && ~/node_modules/pm2/bin/pm2 start ~/mys-projekt-load-balancer-auto-scaler/ecosystem.config.js --only "execs""
 
+ssh -p 3182 sr-projekt-execs-2@h2899502.stratoserver.net "cd ~/mys-projekt-load-balancer-auto-scaler; sh gitsshpullLocal.sh"
+
 rem ssh -t -p 3151 sr-projekt-execs-3@h2899502.stratoserver.net "cd ~/mys-projekt-load-balancer-auto-scaler ; git reset --hard HEAD && git pull && ~/node_modules/pm2/bin/pm2 start ~/mys-projekt-load-balancer-auto-scaler/ecosystem.config.js --only "execs""
 
 rem ssh -t -p 3172 sr-projekt-execs-4@h2899502.stratoserver.net "cd ~/mys-projekt-load-balancer-auto-scaler ; git reset --hard HEAD && git pull && ~/node_modules/pm2/bin/pm2 start ~/mys-projekt-load-balancer-auto-scaler/ecosystem.config.js --only "execs""
