@@ -10,3 +10,5 @@ ssh -t -p 3172 sr-projekt-execs-4@h2899502.stratoserver.net "cd ~/mys-projekt-lo
 
 
 rem ssh -t -p 3154 sr-projekt-execs-1@h2899502.stratoserver.net "~/node_modules/pm2/bin/pm2 list"
+
+ssh -t -p 3154 sr-projekt-execs-1@h2899502.stratoserver.net "ls ~/mys-projekt-load-balancer-auto-scaler/"
