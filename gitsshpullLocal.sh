@@ -1,0 +1,1 @@
+ssh sr-projekt-load-balancer@10.147.7.164 "git reset --hard HEAD && git pull"
