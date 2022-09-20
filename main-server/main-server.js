@@ -487,9 +487,6 @@ async function initServers() {
         secondaryServerManager.addServer(key, secs);
         secs.connect();
 
-
-        //console.log("connected = ", connected);
-        //secs.start()
     }
 }
 
@@ -536,6 +533,10 @@ async function addSecServer(data) {
 }
 
 async function saveSecServer(data, cb) {
+
+    console.log('saveSecServer cluster.isMaster:', cluster.isMaster);
+    console.log('saveSecServer  data:', data);
+    console.log('saveSecServer typeof cb:', typeof cb);
     if (cluster.isMaster) {
         await config.setKey({ [`secondaryServer.${data.id}.host`]: data.host });
         await config.setKey({ [`secondaryServer.${data.id}.exec_port`]: data.exec_port });

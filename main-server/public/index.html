@@ -6,64 +6,73 @@
 
 </head>
 
-<body>
-    <div class="container row">
-        <div class="col">
-            <input id="addSecServerConfigHost" class="form-control" placeholder="Exec Server Host" value="192.168.178.23">
-        </div>
-        <div class="col">
-            <input id="addSecServerConfigPort" class="form-control" placeholder="Exec Server Port" value="8081">
-        </div>
-        <div class="col">
-            <input id="addSecServerWebPort" class="form-control" placeholder="Webserver Port" value="9090">
-        </div>
-        <div class="col">
-            <button id="startButton" class="btn btn-outline-primary" type="button" onclick="addSecServer()">Start</button>
-        </div>
-    </div>
+<body style="background-color: #000000;">
+    <div class="row">
+        <div class="col-md-6 p-3">
+            <div class="text-white bg-dark rounded-3 container card p-3">
+                <!-- var ret = { webServer: { killed: serverProcess.killed, exitCode: serverProcess.exitCode, signalCode: serverProcess.signalCode }, execServer: 'running' } -->
+                <div class="chart-container" style="position: relative; height:50vh;">
+                    <canvas id="myChart"></canvas>
+                </div>
 
-    <div class="col-md-6 p-3">
-        <div class="text-white bg-dark rounded-3 container card">
-            <!-- var ret = { webServer: { killed: serverProcess.killed, exitCode: serverProcess.exitCode, signalCode: serverProcess.signalCode }, execServer: 'running' } -->
-            <div class="chart-container" style="position: relative; height:60vh;">
-                <canvas id="myChart"></canvas>
-            </div>
+                <script>
+                    const ctx = document.getElementById('myChart').getContext('2d');
+                    const myChart = new Chart(ctx, {
+                        type: 'line',
+                        data: {
+                            datasets: [{
+                                label: 'Main',
+                                borderColor: 'grey',
+                                data: [{ x: 0, y: 0 }],
+                                color: '#ff6384'
+                            }]
+                        },
+                        options: {
+                            maintainAspectRatio: false,
+                            responsive: true,
+                            scales: {
+                                x: {
+                                    ticks: {
+                                        source: 'date'
+                                    }
 
-            <script>
-                const ctx = document.getElementById('myChart').getContext('2d');
-                const myChart = new Chart(ctx, {
-                    type: 'line',
-                    data: {
-                        datasets: [{
-                            label: 'Main',
-                            borderColor: 'grey',
-                            data: [{ x: 0, y: 0 }],
-                            color: '#ff6384'
-                        }]
-                    },
-                    options: {
-                        maintainAspectRatio: false,
-                        responsive: true,
-                        scales: {
-                            x: {
-                                ticks: {
-                                    source: 'date'
+                                },
+                                y: {
+                                    type: 'linear',
+                                    min: 0,
+
                                 }
-
-                            },
-                            y: {
-                                type: 'linear',
-                                min: 0,
-
                             }
                         }
-                    }
-                });
-            </script>
+                    });
+                </script>
 
 
+            </div>
+        </div>
+        <div class="col-md-6 p-3">
+            <div class="text-white bg-dark rounded-3 container card p-3">
+
+                <p> Add exec-server</p>
+
+                <div class=" mb-3">
+                    <input id="addSecServerConfigHost" class="form-control btn btn-outline-light" placeholder="Exec Server Host" value="192.168.178.23">
+                </div>
+                <div class=" mb-3">
+                    <input id="addSecServerConfigPort" class="form-control btn btn-outline-light" placeholder="Exec Server Port" value="8081">
+                </div>
+                <div class=" mb-3">
+                    <input id="addSecServerWebPort" class="form-control btn btn-outline-light" placeholder="Webserver Port" value="9090">
+                </div>
+                <div class=" mb-3">
+                    <button id="startButton" class="btn btn-outline-light" type="button" onclick="addSecServer()">Add Server</button>
+                </div>
+
+            </div>
         </div>
     </div>
+
+
     <div id="renderedSecServer" class="row">
 
 
@@ -73,7 +82,7 @@
 
     <template id="secserver">
         <div class="col-md-6 p-3">
-            <div class="text-white bg-dark rounded-3 container card">
+            <div class="text-white bg-dark rounded-3 container card p-3">
                 <!-- var ret = { webServer: { killed: serverProcess.killed, exitCode: serverProcess.exitCode, signalCode: serverProcess.signalCode }, execServer: 'running' } -->
 
 

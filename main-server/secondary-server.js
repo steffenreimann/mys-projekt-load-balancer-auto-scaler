@@ -107,7 +107,7 @@ class SecondaryServerManager {
         for (let index = 0; index < arr.length; index++) {
             const element = arr[index];
             //console.log('getServerStatus element = ', element);
-            //console.log('getServerStatus this.secServers[element] = ', this.secServers[element]);
+            // console.log('getServerStatus this.secServers[element] = ', this.secServers[element]);
             ret[element] = {}
             ret[element].status = await this.secServers[element].getStatus()
             ret[element].connections = this.secServers[element].connections
@@ -115,7 +115,7 @@ class SecondaryServerManager {
             ret[element].host = this.secServers[element].host
             ret[element].exec_port = this.secServers[element].exec_port
             ret[element].webserver_port = this.secServers[element].webserver_port
-            //console.log('getServerStatus : ', this.secServers[element]);
+            console.log('getServerStatus : ', ret[element]);
         }
 
         //console.log('getServerStatus : ', ret);
@@ -260,15 +260,8 @@ class SecondaryServer {
         this.webserver_port = webserver_port;
         this.exec_port = exec_port;
         this.host = ip;
-        console.log(this);
+        //console.log(this);
         this.connect();
-    }
-    addConnection(data) {
-        this.connections[data.id] = data;
-    }
-    removeConnection(id) {
-        //this.connectionHistory[id] = this.connections[id];
-        delete this.connections[id];
     }
     start() {
         return new Promise((resolve, reject) => {
